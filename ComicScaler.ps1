@@ -1,6 +1,6 @@
 #################################################################
-# Manga Upscaler v1.0.0                                         #
-# Upscale your Comic & Manga Lubrary with waifu2x-ncnn-vulkan!  #
+# ComicScaler                                                   #
+# Upscale your Comic & Manga Library with waifu2x-ncnn-vulkan!  #
 # Last updated: 2023-07-30                                      #
 # Created by: Rabenherz                                         #
 #################################################################
@@ -27,8 +27,8 @@ function Banner {
      ╚═════╝ ╚═════╝ ╚═╝     ╚═╝╚═╝ ╚═════╝╚══════╝ ╚═════╝╚═╝  ╚═╝╚══════╝╚══════╝╚═╝  ╚═╝
 "@
     Write-Host $Banner -Foregroundcolor DarkCyan
-    Write-Host "Manga Upscaler v1.0.0" -Foregroundcolor Cyan
-    Write-Host "Upscale your Comic & Manga Lubrary with waifu2x-ncnn-vulkan!" -Foregroundcolor Cyan
+    Write-Host "Manga Upscaler v1.0.1" -Foregroundcolor Cyan
+    Write-Host "Upscale Your Manga and Comic Collection with the Power of PowerShell and waifu2x!" -Foregroundcolor Cyan
     Write-Host "Last updated: 2023-07-30" -Foregroundcolor Cyan
     Write-Host "Created by: Rabenherz" -Foregroundcolor Cyan
     Write-Host ""
@@ -61,8 +61,6 @@ function UpscaleImagesWithWaifu2x {
         [string]$upscaledFolder,
         [string]$waifu2xUpscaleArgs
     )
-
-    #$waifu2xCommand = "$waifu2xPath -i `"$tempUnzipFolder`" -o `"$upscaledFolder`" -n 2 -s 2"
     $waifu2xCommand = "$waifu2xPath -i `"$tempUnzipFolder`" -o `"$upscaledFolder`" $waifu2xUpscaleArgs"
     if ($showWaifu2xOutput) {
         Start-Process -FilePath "cmd.exe" -ArgumentList "/c $waifu2xCommand" -Wait
@@ -70,8 +68,6 @@ function UpscaleImagesWithWaifu2x {
     else {
         Start-Process -FilePath "cmd.exe" -ArgumentList "/c $waifu2xCommand" -WindowStyle Hidden -Wait
     }
-
-    
 }
 
 function ZipManga {
@@ -81,18 +77,12 @@ function ZipManga {
         [string]$tempZipFolder,
         [string]$mangaExtension
     )
-    #$temp_name = $mangaFile_zip + "_upscaled" + $mangaExtension
+    # Compresses upscaled images to a temporary zip file and moves it to the original manga library.
     $temp_name = $mangaFile_zip + $upscaleName + $mangaExtension
     $tempZipFileName = Join-Path -Path $tempZipFolder -ChildPath $temp_name
 
-    Write-Host "Compressing images to: $tempZipFileName"
-
     Compress-Archive -Path "$upscaledFolder\*" -DestinationPath $tempZipFileName -Force -CompressionLevel Optimal
-
-    #$OrignMangaLibary = $($mangaFile.DirectoryName) + "\" + $($mangaFile.BaseName) + "_upscaled" + ($mangaExtension)
     $OrignMangaLibary = $($mangaFile.DirectoryName) + "\" + $($mangaFile.BaseName) + $upscaleName + ($mangaExtension)
-    Write-Host "Moving to: $OrignMangaLibary"
-
     Move-Item -Path $tempZipFileName -Destination $OrignMangaLibary -Force
 }
 
@@ -101,7 +91,6 @@ function RemoveTempFolder {
     param (
         [string]$tempFolder
     )
-
     Remove-Item -Path $tempFolder -Force -Recurse
 }
 
@@ -109,50 +98,34 @@ function UpscaleMangaWithWaifu2x {
     param (
         [string]$mangaPath
     )
-    # Get Directory of the script
+    # Sets up the temporary folder and gets all manga files in the original manga library.
     $scriptPath = $PSScriptRoot
     $tempFolder = Join-Path -Path $scriptPath -ChildPath "MangaUpscaler_TEMP"
     CreateTempFolder $tempFolder
-    # Dected Files to process
     $cbzFiles = Get-ChildItem -Path $mangaPath -Filter "*.cbz"
     $cbrFiles = Get-ChildItem -Path $mangaPath -Filter "*.cbr"
     $mangaFiles = $cbzFiles + $cbrFiles
     foreach ($mangaFile in $mangaFiles) {
+        # Sets up temporary folders and paths for unzipping, upscaling, and saving the manga file.
         Write-Host "Processing $($mangaFile.Name) [$($mangaFile.Extension)]..."
-        
-        # Folder where the unzipped manga will be stored
         $tempUnzipFolder = Join-Path -Path $tempFolder -ChildPath "ToBeProcessed"
         CreateTempFolder $tempUnzipFolder
-        
-        # Unzip manga
         UnzipManga -mangaFile $mangaFile.FullName -tempUnzipFolder $tempUnzipFolder
-        
-        # Create Folder where the upscaled images will be stored
         $upscaledFolder = Join-Path -Path $tempFolder -ChildPath "UpcaledImages"
         CreateTempFolder $upscaledFolder
-
-        # Set destioned where the finished and zipped file will be moved to
-        #$destination = Join-Path -Path $mangaFile.DirectoryName -ChildPath "$($mangaFile.BaseName)_upscaled$($mangaFile.Extension)"
         $destination = Join-Path -Path $mangaFile.DirectoryName -ChildPath "$($mangaFile.BaseName)$upscaleName$($mangaFile.Extension)"
-        Write-Host "Manga File: $($mangaFile.FullName)"
         Write-Host "Destination: $destination"
-        Write-Host "Upscaled Folder: $tempUnzipFolder"
-        Write-Host "Upscaled Folder: $upscaledFolder"
-    
+
+        # Upscales images with Waifu2x, creates a temporary folder for the zipped manga, and zips the upscaled images.
         UpscaleImagesWithWaifu2x -waifu2xPath $waifu2xPath -tempUnzipFolder $tempUnzipFolder -upscaledFolder $upscaledFolder -waifu2xUpscaleArgs $waifu2xArguments
-        
-        # Create Folder where the zipped manga will be stored
         $tempZipFolder = Join-Path -Path $tempFolder -ChildPath "ZipManga"
         CreateTempFolder $tempZipFolder
         ZipManga -mangaFile_zip $($mangaFile.BaseName) -upscaledFolder $upscaledFolder -tempZipFolder $tempZipFolder -mangaExtension $($mangaFile.Extension)
-    
         RemoveTempFolder $tempUnzipFolder
         RemoveTempFolder $upscaledFolder
         RemoveTempFolder $tempZipFolder
-    
         Write-Host "Finished processing $($mangaFile.Name) [$($mangaFile.Extension)]."
     }
-
     RemoveTempFolder $tempFolder
 }
 
