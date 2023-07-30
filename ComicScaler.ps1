@@ -14,7 +14,7 @@ $waifu2xArguments = "-n 3 -s 2 -f jpg"
 # Name of the upscaled file (e.g. "manga.cbz" will be upscaled to "manga_upscaled.cbz") leave blank ("") to overwrite the original file
 $upscaleName = "_upscaled"
 # Delete the original file after upscaling (true/false)
-$deleteOriginal = $true
+$deleteOriginal = $false
 # Should the script also look in sub-folders (true/false)
 $recursiveLookup = $false
 # Show the waifu2x-ncnn-vulkan output window (true/false)
