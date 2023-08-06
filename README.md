@@ -39,7 +39,7 @@ The script allows you to configure multiple variables to your needs. You can fin
 - `$deleteOriginal` - If you want to delete the original files after upscaling, set this to `$true` (default: `$false`)
 - `$recursiveLookup` - Will try to upscale all files in subfolders (default: `$false`)
 - `$showWaifu2xOutput` - Will show an additional window with the waifu2x output (default: `$false`)
-- `$use7zip` - Uses 7zip to zip the files instead of the built-in powershell function (default: `$true`). This is faster and allows for a higher compression rate. If you don't have 7zip installed, set this to `$false` and the script will use the built-in powershell function.
+- `$use7zip` - Uses 7zip to zip/unzip the files instead of the built-in PowerShell function (default: `$true`). This is faster and allows for a higher compression rate and better compatibility with other zip formats. If you don't have 7zip installed, set this to `$false` and the script will use the built-in powershell function.
 
 ## Before & After
 
