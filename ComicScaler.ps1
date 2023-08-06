@@ -33,9 +33,9 @@ function Banner {
      ╚═════╝ ╚═════╝ ╚═╝     ╚═╝╚═╝ ╚═════╝╚══════╝ ╚═════╝╚═╝  ╚═╝╚══════╝╚══════╝╚═╝  ╚═╝
 "@
     Write-Host $Banner -Foregroundcolor DarkCyan
-    Write-Host "Manga Upscaler v1.0.2" -Foregroundcolor Cyan
+    Write-Host "Manga Upscaler v1.0.3" -Foregroundcolor Cyan
     Write-Host "Upscale Your Manga and Comic Collection with the Power of PowerShell and waifu2x!" -Foregroundcolor Cyan
-    Write-Host "Last updated: 2023-07-30" -Foregroundcolor Cyan
+    Write-Host "Last updated: 2023-08-06" -Foregroundcolor Cyan
     Write-Host "Created by: Rabenherz" -Foregroundcolor Cyan
     Write-Host ""
     Write-Host ""
@@ -56,8 +56,18 @@ function UnzipManga {
         [string]$mangaFile,
         [string]$tempUnzipFolder
     )
-
-    Expand-Archive -Path $mangaFile -DestinationPath $tempUnzipFolder -Force
+    if ($use7zip) {
+        if (-not (Test-Path "$env:ProgramFiles\7-Zip\7z.exe")) {
+            Write-Output "7-zip not installed! Using Expand-Archive instead."
+            Expand-Archive -Path $mangaFile -DestinationPath $tempUnzipFolder -Force
+        } else {
+            Set-Alias unzip "$env:ProgramFiles\7-Zip\7z.exe"
+            unzip x -y $mangaFile -o"$tempUnzipFolder" | Out-Null
+        }
+    }
+    else {
+        Expand-Archive -Path $mangaFile -DestinationPath $tempUnzipFolder -Force
+    }
 }
 
 function UpscaleImagesWithWaifu2x {
