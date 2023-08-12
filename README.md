@@ -28,10 +28,6 @@
 
 The script allows you to configure multiple variables to your needs. You can find them at the top of the script.
 
-**Required changes:**
-
-- `$waifu2xPath` - Path to the [waifu2x-ncnn-vulkan executable](https://github.com/nihui/waifu2x-ncnn-vulkan/releases/)
-
 **Optional changes:**
 
 - `$waifu2xArguments` - Change the [upscaler arguments](https://github.com/nihui/waifu2x-ncnn-vulkan#usages) (default arguments are best if you don't know what you are doing)
@@ -47,3 +43,7 @@ The script allows you to configure multiple variables to your needs. You can fin
 | :----: | :---: |
 | 250KB | 2.780KB |
 | ![](/assets/normal.jpg) | ![](/assets/upscaled.jpg) |
+
+## Credits
+
+- [waifu2x-ncnn-vulkan](https://github.com/nihui/waifu2x-ncnn-vulkan) by [nihui](https://github.com/nihui) - Used for upscaling
