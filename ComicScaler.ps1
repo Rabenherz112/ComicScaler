@@ -1,16 +1,17 @@
 #################################################################
 # ComicScaler                                                   #
 # Upscale your Comic & Manga Library with waifu2x-ncnn-vulkan!  #
-# Last updated: 2023-07-30                                      #
+# Last updated: 2023-08-12                                      #
 # Created by: Rabenherz                                         #
 #################################################################
 
 ## Adjustable variables
 
-# Path to the waifu2x-ncnn-vulkan executable (Download latest version from https://github.com/nihui/waifu2x-ncnn-vulkan/releases)
-$waifu2xPath = "Path\to\waifu2x-ncnn-vulkan.exe"
+# Path to the waifu2x-ncnn-vulkan executable
+$waifu2xPath = ".\waifu2x\waifu2x-ncnn-vulkan.exe"
 # Arguments to pass to waifu2x-ncnn-vulkan (See documentation at https://github.com/nihui/waifu2x-ncnn-vulkan#usages)
-$waifu2xArguments = "-n 3 -s 2 -f jpg"
+$waifu2xArguments = "-f jpg -m .\waifu2x\models-upconv_7_anime_style_art_rgb\ -n 2 -s 2 -t 0"
+# $waifu2xArguments = "-f jpg -m .\waifu2x\models-cunet\ -n 3 -s 2 -t 0" # Whant to save a few KBs? Use this instead!
 # Name of the upscaled file (e.g. "manga.cbz" will be upscaled to "manga_upscaled.cbz") leave blank ("") to overwrite the original file
 $upscaleName = "_upscaled"
 # Delete the original file after upscaling (true/false)
@@ -33,9 +34,9 @@ function Banner {
      ╚═════╝ ╚═════╝ ╚═╝     ╚═╝╚═╝ ╚═════╝╚══════╝ ╚═════╝╚═╝  ╚═╝╚══════╝╚══════╝╚═╝  ╚═╝
 "@
     Write-Host $Banner -Foregroundcolor DarkCyan
-    Write-Host "Manga Upscaler v1.0.3" -Foregroundcolor Cyan
+    Write-Host "Manga Upscaler v1.0.4" -Foregroundcolor Cyan
     Write-Host "Upscale Your Manga and Comic Collection with the Power of PowerShell and waifu2x!" -Foregroundcolor Cyan
-    Write-Host "Last updated: 2023-08-06" -Foregroundcolor Cyan
+    Write-Host "Last updated: 2023-08-12" -Foregroundcolor Cyan
     Write-Host "Created by: Rabenherz" -Foregroundcolor Cyan
     Write-Host ""
     Write-Host ""
@@ -135,7 +136,7 @@ function UpscaleMangaWithWaifu2x {
         $cbzFiles = Get-ChildItem -Path $mangaPath -Filter "*.cbz"
         $cbrFiles = Get-ChildItem -Path $mangaPath -Filter "*.cbr"
     }
-    $mangaFiles = $cbzFiles + $cbrFiles
+    $mangaFiles = @($cbzFiles) + @($cbrFiles)
     if ($mangaFiles.Count -eq 0) {
         Write-Host "No manga files found in $mangaPath"
         return
